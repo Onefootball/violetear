@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Violetear by nbari</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Violetear</h1>
+      <h2 class="project-tagline">Go HTTP router</h2>
+      <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
+      <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/nbari/violetear/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <p><a href="https://godoc.org/github.com/nbari/violetear"><img src="https://godoc.org/github.com/nbari/violetear?status.svg" alt="GoDoc"></a>
+<a href="https://drone.io/github.com/nbari/violetear/latest"><img src="https://drone.io/github.com/nbari/violetear/status.png" alt="Build Status"></a>
+<a href="https://circleci.com/gh/nbari/violetear"><img src="https://circleci.com/gh/nbari/violetear.svg?style=svg" alt="Circle CI"></a>
+<a href="https://travis-ci.org/nbari/violetear"><img src="https://travis-ci.org/nbari/violetear.svg?branch=master" alt="Build Status"></a>
+<a href="http://gocover.io/github.com/nbari/violetear"><img src="http://gocover.io/_badge/github.com/nbari/violetear?0" alt="Coverage"></a>
+<a href="https://coveralls.io/github/nbari/violetear?branch=develop"><img src="https://coveralls.io/repos/nbari/violetear/badge.svg?branch=develop&amp;service=github" alt="Coverage Status"></a>
+<a href="http://codecov.io/github/nbari/violetear?branch=master"><img src="http://codecov.io/github/nbari/violetear/coverage.svg?branch=master" alt="codecov.io"></a></p>
+
+<h1>
+<a id="violetear" class="anchor" href="#violetear" aria-hidden="true"><span class="octicon octicon-link"></span></a>violetear</h1>
+
+<p>Go HTTP router</p>
+
+<h3>
+<a id="design-goals" class="anchor" href="#design-goals" aria-hidden="true"><span class="octicon octicon-link"></span></a>Design Goals</h3>
+
+<ul>
+<li>Keep it simple and small, avoiding extra complexity at all cost. <a href="http://en.wikipedia.org/wiki/KISS_principle">KISS</a>
+</li>
+<li>Support for static and dynamic routing.</li>
+<li>Easy middleware compatibility so that it satisfies the http.Handler interface.</li>
+<li>Trace Request-ID per request.</li>
+</ul>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>For more details <a href="https://godoc.org/github.com/nbari/violetear">GoDoc</a>:</p>
+
+<div class="highlight highlight-source-go"><pre><span class="pl-k">package</span> main
+
+<span class="pl-k">import</span> (
+    <span class="pl-s"><span class="pl-pds">"</span>fmt<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>log<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>net/http<span class="pl-pds">"</span></span>
+)
+
+<span class="pl-k">func</span> <span class="pl-en">catchAll</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    fmt.<span class="pl-c1">Fprintf</span>(w, r.<span class="pl-smi">URL</span>.<span class="pl-smi">Path</span>[<span class="pl-c1">1</span>:])
+}
+
+<span class="pl-k">func</span> <span class="pl-en">helloWorld</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    fmt.<span class="pl-c1">Fprintf</span>(w, r.<span class="pl-smi">URL</span>.<span class="pl-smi">Path</span>[<span class="pl-c1">1</span>:])
+}
+
+<span class="pl-k">func</span> <span class="pl-en">handleUUID</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    fmt.<span class="pl-c1">Fprintf</span>(w, r.<span class="pl-smi">URL</span>.<span class="pl-smi">Path</span>[<span class="pl-c1">1</span>:])
+}
+
+<span class="pl-k">func</span> <span class="pl-en">main</span>() {
+    <span class="pl-smi">router</span> <span class="pl-k">:=</span> violetear.<span class="pl-c1">New</span>()
+    router.<span class="pl-smi">LogRequests</span> = <span class="pl-c1">true</span>
+    router.<span class="pl-smi">Request_ID</span> = <span class="pl-s"><span class="pl-pds">"</span>REQUEST_LOG_ID<span class="pl-pds">"</span></span>
+
+    router.<span class="pl-c1">AddRegex</span>(<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">`</span>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}<span class="pl-pds">`</span></span>)
+
+    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>, catchAll)
+    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>/root/<span class="pl-pds">"</span></span>, helloWorld, <span class="pl-s"><span class="pl-pds">"</span>GET,HEAD<span class="pl-pds">"</span></span>)
+    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>/root/:uuid/item<span class="pl-pds">"</span></span>, helloUUID, <span class="pl-s"><span class="pl-pds">"</span>POST,PUT<span class="pl-pds">"</span></span>)
+
+    log.<span class="pl-c1">Fatal</span>(http.<span class="pl-c1">ListenAndServe</span>(<span class="pl-s"><span class="pl-pds">"</span>:8080<span class="pl-pds">"</span></span>, router))
+}</pre></div>
+
+<h2>
+<a id="canonicalized-headers-issues" class="anchor" href="#canonicalized-headers-issues" aria-hidden="true"><span class="octicon octicon-link"></span></a>Canonicalized headers issues</h2>
+
+<p>Go version &lt; 1.5 will canonicalize the header (from uppercase to lowercase),
+example:</p>
+
+<p><a href="https://travis-ci.org/nbari/violetear/jobs/81059152#L156">https://travis-ci.org/nbari/violetear/jobs/81059152#L156</a> golang 1.4</p>
+
+<p><a href="https://travis-ci.org/nbari/violetear/jobs/81059153#L156">https://travis-ci.org/nbari/violetear/jobs/81059153#L156</a> golang 1.5</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/nbari/violetear">Violetear</a> is maintained by <a href="https://github.com/nbari">nbari</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
