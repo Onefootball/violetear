@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
+      <h1 class="project-name">Violetear</h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -43,10 +43,32 @@
 <li>Trace Request-ID per request.</li>
 </ul>
 
+<p>Package <a href="https://godoc.org/github.com/nbari/violetear">GoDoc</a></p>
+
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>Package <a href="https://godoc.org/github.com/nbari/violetear">GoDoc</a>, basic example:</p>
+<p>HandleFunc:</p>
+
+<pre><code> func HandleFunc(path string, handler http.HandlerFunc, http_methods ...string)
+</code></pre>
+
+<p>Handle (for middleware):</p>
+
+<pre><code> func Handle(path string, handler http.Handler, http_methods ...string)
+</code></pre>
+
+<p><strong>http_methods</strong> is a comma separted list of allowed HTTP methods, example:</p>
+
+<pre><code>router.HandleFunc("/view", handleView, "GET, HEAD")
+</code></pre>
+
+<p><strong>AddRegex</strong> adds a ":named" regular expression to the dynamicRoutes, example:</p>
+
+<pre><code>router.AddRegex(":ip", `^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$`)
+</code></pre>
+
+<p>Basic example:</p>
 
 <div class="highlight highlight-source-go"><pre><span class="pl-k">package</span> main
 
@@ -75,6 +97,7 @@
 <span class="pl-k">func</span> <span class="pl-en">main</span>() {
     <span class="pl-smi">router</span> <span class="pl-k">:=</span> violetear.<span class="pl-c1">New</span>()
     router.<span class="pl-smi">LogRequests</span> = <span class="pl-c1">true</span>
+    router.<span class="pl-smi">Request_ID</span> = <span class="pl-s"><span class="pl-pds">"</span>Request-ID<span class="pl-pds">"</span></span>
 
     router.<span class="pl-c1">AddRegex</span>(<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">`</span>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}<span class="pl-pds">`</span></span>)
 
@@ -157,6 +180,58 @@ Request-Id: POST-1445528839403536403-6
 X-Content-Type-Options: nosniff
 
 Method Not Allowed</pre></div>
+
+<h2>
+<a id="request_id" class="anchor" href="#request_id" aria-hidden="true"><span class="octicon octicon-link"></span></a>Request_ID</h2>
+
+<p>To keep track of the "requests" an existing "request ID" can be used, for
+example when using AppEngine the name of the header containing the request ID is
+<strong>Request-ID</strong> therefore to continue using it, the router needs to know the name
+of the header:</p>
+
+<pre><code>router := violetear.New()
+router.Request_ID = "Request-ID"
+</code></pre>
+
+<p>If the proxy is using another name, for example "RID" then use something like:</p>
+
+<pre><code>router := violetear.New()
+router.Request_ID = "RID"
+</code></pre>
+
+<p>If <code>router.Request_ID</code> is not set, no "request ID" is going to be added to the
+headers, if it is set but not headers found from the request headers, one will
+be created.</p>
+
+<p>This can be extended using a middleware same has the logger.</p>
+
+<h2>
+<a id="notfoundhandler" class="anchor" href="#notfoundhandler" aria-hidden="true"><span class="octicon octicon-link"></span></a>NotFoundHandler</h2>
+
+<p>For defining a custom <code>http.Handler</code> to handle <strong>404 Not Found</strong> example:</p>
+
+<pre><code>...
+
+func my404() http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {                                                                                                        http.Error(w, "ne ne ne", 404)
+    })
+}
+
+func main() {
+    router := violetear.New()
+    router.NotFoundHandler = my404()
+    ...
+</code></pre>
+
+<h2>
+<a id="notallowedhandler" class="anchor" href="#notallowedhandler" aria-hidden="true"><span class="octicon octicon-link"></span></a>NotAllowedHandler</h2>
+
+<p>For defining a custom <code>http.Handler</code> to handle <strong>405 Method Not Allowed</strong>.</p>
+
+<h2>
+<a id="panichandler" class="anchor" href="#panichandler" aria-hidden="true"><span class="octicon octicon-link"></span></a>PanicHandler</h2>
+
+<p>For using a custom http.HandlerFunc to handle panics</p>
 
 <h2>
 <a id="middleware" class="anchor" href="#middleware" aria-hidden="true"><span class="octicon octicon-link"></span></a>Middleware</h2>
