@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
+      <h1 class="project-name">Violetear</h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -213,7 +213,8 @@ be created.</p>
 <pre><code>...
 
 func my404() http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {                                                                                                        http.Error(w, "ne ne ne", 404)
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        http.Error(w, "ne ne ne", 404)
     })
 }
 
