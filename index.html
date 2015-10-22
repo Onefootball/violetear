@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-    <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
+      <h1 class="project-name">Violetear</h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -46,42 +46,217 @@
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
-<p>For more details <a href="https://godoc.org/github.com/nbari/violetear">GoDoc</a>:</p>
+<p>Package <a href="https://godoc.org/github.com/nbari/violetear">GoDoc</a>, basic example:</p>
 
 <div class="highlight highlight-source-go"><pre><span class="pl-k">package</span> main
 
 <span class="pl-k">import</span> (
-    <span class="pl-s"><span class="pl-pds">"</span>fmt<span class="pl-pds">"</span></span>
     <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear<span class="pl-pds">"</span></span>
     <span class="pl-s"><span class="pl-pds">"</span>log<span class="pl-pds">"</span></span>
     <span class="pl-s"><span class="pl-pds">"</span>net/http<span class="pl-pds">"</span></span>
 )
 
 <span class="pl-k">func</span> <span class="pl-en">catchAll</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
-    fmt.<span class="pl-c1">Fprintf</span>(w, r.<span class="pl-smi">URL</span>.<span class="pl-smi">Path</span>[<span class="pl-c1">1</span>:])
+    w.<span class="pl-c1">Write</span>([]<span class="pl-k">byte</span>(<span class="pl-s"><span class="pl-pds">"</span>I'm catching all<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>))
 }
 
-<span class="pl-k">func</span> <span class="pl-en">helloWorld</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
-    fmt.<span class="pl-c1">Fprintf</span>(w, r.<span class="pl-smi">URL</span>.<span class="pl-smi">Path</span>[<span class="pl-c1">1</span>:])
+<span class="pl-k">func</span> <span class="pl-en">handleGET</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    w.<span class="pl-c1">Write</span>([]<span class="pl-k">byte</span>(<span class="pl-s"><span class="pl-pds">"</span>I handle GET requests<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>))
+}
+
+<span class="pl-k">func</span> <span class="pl-en">handlePOST</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    w.<span class="pl-c1">Write</span>([]<span class="pl-k">byte</span>(<span class="pl-s"><span class="pl-pds">"</span>I handle POST requests<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>))
 }
 
 <span class="pl-k">func</span> <span class="pl-en">handleUUID</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
-    fmt.<span class="pl-c1">Fprintf</span>(w, r.<span class="pl-smi">URL</span>.<span class="pl-smi">Path</span>[<span class="pl-c1">1</span>:])
+    w.<span class="pl-c1">Write</span>([]<span class="pl-k">byte</span>(<span class="pl-s"><span class="pl-pds">"</span>I handle dynamic requests<span class="pl-cce">\n</span><span class="pl-pds">"</span></span>))
 }
 
 <span class="pl-k">func</span> <span class="pl-en">main</span>() {
     <span class="pl-smi">router</span> <span class="pl-k">:=</span> violetear.<span class="pl-c1">New</span>()
     router.<span class="pl-smi">LogRequests</span> = <span class="pl-c1">true</span>
-    router.<span class="pl-smi">Request_ID</span> = <span class="pl-s"><span class="pl-pds">"</span>REQUEST_LOG_ID<span class="pl-pds">"</span></span>
 
     router.<span class="pl-c1">AddRegex</span>(<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">`</span>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}<span class="pl-pds">`</span></span>)
 
     router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>, catchAll)
-    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>/root/<span class="pl-pds">"</span></span>, helloWorld, <span class="pl-s"><span class="pl-pds">"</span>GET,HEAD<span class="pl-pds">"</span></span>)
-    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>/root/:uuid/item<span class="pl-pds">"</span></span>, helloUUID, <span class="pl-s"><span class="pl-pds">"</span>POST,PUT<span class="pl-pds">"</span></span>)
+    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>/method<span class="pl-pds">"</span></span>, handleGET, <span class="pl-s"><span class="pl-pds">"</span>GET<span class="pl-pds">"</span></span>)
+    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>/method<span class="pl-pds">"</span></span>, handlePOST, <span class="pl-s"><span class="pl-pds">"</span>POST<span class="pl-pds">"</span></span>)
+    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>/:uuid<span class="pl-pds">"</span></span>, handleUUID, <span class="pl-s"><span class="pl-pds">"</span>GET,HEAD<span class="pl-pds">"</span></span>)
 
     log.<span class="pl-c1">Fatal</span>(http.<span class="pl-c1">ListenAndServe</span>(<span class="pl-s"><span class="pl-pds">"</span>:8080<span class="pl-pds">"</span></span>, router))
 }</pre></div>
+
+<p>Running this code will show something like this:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ go run <span class="pl-c1">test</span>.go
+2015/10/22 17:14:18 Adding path: <span class="pl-k">*</span> [ALL]
+2015/10/22 17:14:18 Adding path: /method [GET]
+2015/10/22 17:14:18 Adding path: /method [POST]
+2015/10/22 17:14:18 Adding path: /:uuid [GET,HEAD]</pre></div>
+
+<blockquote>
+<p>test.go contains the code show above</p>
+</blockquote>
+
+<p>Testing using curl or <a href="https://github.com/jkbrzt/httpie">http</a></p>
+
+<p>Any request 'catch-all':</p>
+
+<div class="highlight highlight-source-shell"><pre>$ http POST http://localhost:8080/
+HTTP/1.1 200 OK
+Content-Length: 17
+Content-Type: text/plain<span class="pl-k">;</span> charset=utf-8
+Date: Thu, 22 Oct 2015 15:18:49 GMT
+Request-Id: POST-1445527129854964669-1
+
+I<span class="pl-s"><span class="pl-pds">'</span>m catching all</span></pre></div>
+
+<p>A GET request:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ http http://localhost:8080/method
+HTTP/1.1 200 OK
+Content-Length: 22
+Content-Type: text/plain<span class="pl-k">;</span> charset=utf-8
+Date: Thu, 22 Oct 2015 15:43:25 GMT
+Request-Id: GET-1445528605902591921-1
+
+I handle GET requests</pre></div>
+
+<p>A POST request:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ http POST http://localhost:8080/method
+HTTP/1.1 200 OK
+Content-Length: 23
+Content-Type: text/plain<span class="pl-k">;</span> charset=utf-8
+Date: Thu, 22 Oct 2015 15:44:28 GMT
+Request-Id: POST-1445528668557478433-2
+
+I handle POST requests</pre></div>
+
+<p>A dynamic request using an <a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">UUID</a> as the URL resource:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ http http://localhost:8080/50244127-45F6-4210-A89D-FFB0DA039425
+HTTP/1.1 200 OK
+Content-Length: 26
+Content-Type: text/plain<span class="pl-k">;</span> charset=utf-8
+Date: Thu, 22 Oct 2015 15:45:33 GMT
+Request-Id: GET-1445528733916239110-5
+
+I handle dynamic requests</pre></div>
+
+<p>Trying to use POST on the <code>/:uuid</code> resource will cause a
+<em>Method not Allowed 405</em> this because only <code>GET</code> and <code>HEAD</code>
+methods are allowed:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ http POST http://localhost:8080/50244127-45F6-4210-A89D-FFB0DA039425
+HTTP/1.1 405 Method Not Allowed
+Content-Length: 19
+Content-Type: text/plain<span class="pl-k">;</span> charset=utf-8
+Date: Thu, 22 Oct 2015 15:47:19 GMT
+Request-Id: POST-1445528839403536403-6
+X-Content-Type-Options: nosniff
+
+Method Not Allowed</pre></div>
+
+<h2>
+<a id="middleware" class="anchor" href="#middleware" aria-hidden="true"><span class="octicon octicon-link"></span></a>Middleware</h2>
+
+<p>Violetear uses <a href="http://justinas.org/alice-painless-middleware-chaining-for-go/">Alice</a> to handle <a href="middleware">middleware</a>.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-source-go"><pre><span class="pl-k">package</span> main
+
+<span class="pl-k">import</span> (
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear/middleware<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>log<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>net/http<span class="pl-pds">"</span></span>
+)
+
+<span class="pl-k">func</span> <span class="pl-en">commonHeaders</span>(<span class="pl-v">next</span> <span class="pl-v">http</span>.<span class="pl-v">Handler</span>) <span class="pl-v">http</span>.<span class="pl-v">Handler</span> {
+    <span class="pl-k">return</span> http.<span class="pl-c1">HandlerFunc</span>(<span class="pl-k">func</span>(w http.<span class="pl-smi">ResponseWriter</span>, r *http.<span class="pl-smi">Request</span>) {
+        w.<span class="pl-c1">Header</span>().<span class="pl-c1">Set</span>(<span class="pl-s"><span class="pl-pds">"</span>X-app-Version<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>1.0<span class="pl-pds">"</span></span>)
+        next.<span class="pl-c1">ServeHTTP</span>(w, r)
+    })
+}
+
+<span class="pl-k">func</span> <span class="pl-en">middlewareOne</span>(<span class="pl-v">next</span> <span class="pl-v">http</span>.<span class="pl-v">Handler</span>) <span class="pl-v">http</span>.<span class="pl-v">Handler</span> {
+    <span class="pl-k">return</span> http.<span class="pl-c1">HandlerFunc</span>(<span class="pl-k">func</span>(w http.<span class="pl-smi">ResponseWriter</span>, r *http.<span class="pl-smi">Request</span>) {
+        log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing middlewareOne<span class="pl-pds">"</span></span>)
+        next.<span class="pl-c1">ServeHTTP</span>(w, r)
+        log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing middlewareOne again<span class="pl-pds">"</span></span>)
+    })
+}
+
+<span class="pl-k">func</span> <span class="pl-en">middlewareTwo</span>(<span class="pl-v">next</span> <span class="pl-v">http</span>.<span class="pl-v">Handler</span>) <span class="pl-v">http</span>.<span class="pl-v">Handler</span> {
+    <span class="pl-k">return</span> http.<span class="pl-c1">HandlerFunc</span>(<span class="pl-k">func</span>(w http.<span class="pl-smi">ResponseWriter</span>, r *http.<span class="pl-smi">Request</span>) {
+        log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing middlewareTwo<span class="pl-pds">"</span></span>)
+        <span class="pl-k">if</span> r.<span class="pl-smi">URL</span>.<span class="pl-smi">Path</span> != <span class="pl-s"><span class="pl-pds">"</span>/<span class="pl-pds">"</span></span> {
+            <span class="pl-k">return</span>
+        }
+        next.<span class="pl-c1">ServeHTTP</span>(w, r)
+        log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing middlewareTwo again<span class="pl-pds">"</span></span>)
+    })
+}
+
+<span class="pl-k">func</span> <span class="pl-en">catchAll</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing finalHandler<span class="pl-pds">"</span></span>)
+    w.<span class="pl-c1">Write</span>([]<span class="pl-k">byte</span>(<span class="pl-s"><span class="pl-pds">"</span>I catch all<span class="pl-pds">"</span></span>))
+}
+
+<span class="pl-k">func</span> <span class="pl-en">foo</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing finalHandler<span class="pl-pds">"</span></span>)
+    w.<span class="pl-c1">Write</span>([]<span class="pl-k">byte</span>(<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>))
+}
+
+<span class="pl-k">func</span> <span class="pl-en">main</span>() {
+    <span class="pl-smi">router</span> <span class="pl-k">:=</span> violetear.<span class="pl-c1">New</span>()
+
+    <span class="pl-smi">stdChain</span> <span class="pl-k">:=</span> middleware.<span class="pl-c1">New</span>(commonHeaders, middlewareOne, middlewareTwo)
+
+    router.<span class="pl-c1">Handle</span>(<span class="pl-s"><span class="pl-pds">"</span>/<span class="pl-pds">"</span></span>, stdChain.<span class="pl-c1">ThenFunc</span>(catchAll), <span class="pl-s"><span class="pl-pds">"</span>GET,HEAD<span class="pl-pds">"</span></span>)
+    router.<span class="pl-c1">Handle</span>(<span class="pl-s"><span class="pl-pds">"</span>/foo<span class="pl-pds">"</span></span>, stdChain.<span class="pl-c1">ThenFunc</span>(foo), <span class="pl-s"><span class="pl-pds">"</span>GET,HEAD<span class="pl-pds">"</span></span>)
+    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>/bar<span class="pl-pds">"</span></span>, foo)
+
+    log.<span class="pl-c1">Fatal</span>(http.<span class="pl-c1">ListenAndServe</span>(<span class="pl-s"><span class="pl-pds">"</span>:8080<span class="pl-pds">"</span></span>, router))
+}</pre></div>
+
+<blockquote>
+<p>Notice the use or router.Handle and router.HandleFunc when using middleware
+you normally would use route.Handle</p>
+</blockquote>
+
+<p>Request output example:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ http http://localhost:8080/
+HTTP/1.1 200 OK
+Content-Length: 11
+Content-Type: text/plain<span class="pl-k">;</span> charset=utf-8
+Date: Thu, 22 Oct 2015 16:08:18 GMT
+Request-Id: GET-1445530098002701428-3
+X-App-Version: 1.0
+
+I catch all</pre></div>
+
+<p>On the server you will see something like this:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ go run <span class="pl-c1">test</span>.go
+2015/10/22 18:07:55 Adding path: / [GET]
+2015/10/22 18:07:55 Adding path: /foo [GET]
+2015/10/22 18:07:55 Adding path: /bar [ALL]
+2015/10/22 18:08:18 Executing middlewareOne
+2015/10/22 18:08:18 Executing middlewareTwo
+2015/10/22 18:08:18 Executing finalHandler
+2015/10/22 18:08:18 Executing middlewareTwo again
+2015/10/22 18:08:18 Executing middlewareOne again</pre></div>
+
+<p>More references:</p>
+
+<ul>
+<li><a href="http://www.alexedwards.net/blog/making-and-using-middleware">http://www.alexedwards.net/blog/making-and-using-middleware</a></li>
+<li><a href="https://justinas.org/alice-painless-middleware-chaining-for-go/">https://justinas.org/alice-painless-middleware-chaining-for-go/</a></li>
+</ul>
 
 <h2>
 <a id="canonicalized-headers-issues" class="anchor" href="#canonicalized-headers-issues" aria-hidden="true"><span class="octicon octicon-link"></span></a>Canonicalized headers issues</h2>
@@ -101,6 +276,6 @@ example:</p>
 
     </section>
 
-
+  
   </body>
 </html>
