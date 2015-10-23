@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
+      <h1 class="project-name">Violetear</h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -149,7 +149,7 @@ can also be customised.</p>
 <span class="pl-k">func</span> <span class="pl-en">main</span>() {
     <span class="pl-smi">router</span> <span class="pl-k">:=</span> violetear.<span class="pl-c1">New</span>()
     router.<span class="pl-smi">LogRequests</span> = <span class="pl-c1">true</span>
-    router.<span class="pl-smi">Request_ID</span> = <span class="pl-s"><span class="pl-pds">"</span>Request-ID<span class="pl-pds">"</span></span>
+    router.<span class="pl-smi">RequestID</span> = <span class="pl-s"><span class="pl-pds">"</span>Request-ID<span class="pl-pds">"</span></span>
 
     router.<span class="pl-c1">AddRegex</span>(<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">`</span>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}<span class="pl-pds">`</span></span>)
 
@@ -234,7 +234,7 @@ X-Content-Type-Options: nosniff
 Method Not Allowed</pre></div>
 
 <h2>
-<a id="request_id" class="anchor" href="#request_id" aria-hidden="true"><span class="octicon octicon-link"></span></a>Request_ID</h2>
+<a id="requestid" class="anchor" href="#requestid" aria-hidden="true"><span class="octicon octicon-link"></span></a>RequestID</h2>
 
 <p>To keep track of the "requests" an existing "request ID" can be used, for
 example when using AppEngine the name of the header containing the request ID is
@@ -242,16 +242,16 @@ example when using AppEngine the name of the header containing the request ID is
 of the header:</p>
 
 <pre><code>router := violetear.New()
-router.Request_ID = "Request-ID"
+router.RequestID = "Request-ID"
 </code></pre>
 
 <p>If the proxy is using another name, for example "RID" then use something like:</p>
 
 <pre><code>router := violetear.New()
-router.Request_ID = "RID"
+router.RequestID = "RID"
 </code></pre>
 
-<p>If <code>router.Request_ID</code> is not set, no "request ID" is going to be added to the
+<p>If <code>router.RequestID</code> is not set, no "request ID" is going to be added to the
 headers, if it is set but not headers found from the request headers, one will
 be created.</p>
 
