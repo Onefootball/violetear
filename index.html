@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
+      <h1 class="project-name">Violetear</h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -236,10 +236,9 @@ Method Not Allowed</pre></div>
 <h2>
 <a id="requestid" class="anchor" href="#requestid" aria-hidden="true"><span class="octicon octicon-link"></span></a>RequestID</h2>
 
-<p>To keep track of the "requests" an existing "request ID" can be used, for
-example when using AppEngine the name of the header containing the request ID is
-<strong>Request-ID</strong> therefore to continue using it, the router needs to know the name
-of the header:</p>
+<p>To keep track of the "requests" an existing "request ID" header can be used, if
+the header name for example is <strong>Request-ID</strong> therefore to continue using it,
+the router needs to know the name, example:</p>
 
 <pre><code>router := violetear.New()
 router.RequestID = "Request-ID"
@@ -252,10 +251,8 @@ router.RequestID = "RID"
 </code></pre>
 
 <p>If <code>router.RequestID</code> is not set, no "request ID" is going to be added to the
-headers, if it is set but not headers found from the request headers, one will
-be created.</p>
-
-<p>This can be extended using a middleware same has the logger.</p>
+headers. This can be extended using a middleware same has the logger check the
+AppEngine example.</p>
 
 <h2>
 <a id="notfoundhandler" class="anchor" href="#notfoundhandler" aria-hidden="true"><span class="octicon octicon-link"></span></a>NotFoundHandler</h2>
@@ -378,6 +375,67 @@ I catch all</pre></div>
 2015/10/22 18:08:18 Executing finalHandler
 2015/10/22 18:08:18 Executing middlewareTwo again
 2015/10/22 18:08:18 Executing middlewareOne again</pre></div>
+
+<h2>
+<a id="appengine" class="anchor" href="#appengine" aria-hidden="true"><span class="octicon octicon-link"></span></a>AppEngine</h2>
+
+<p>The app.yaml file:</p>
+
+<div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">application:</span> <span class="pl-s"><span class="pl-pds">'</span>app-name<span class="pl-pds">'</span></span></span>
+<span class="pl-c1"><span class="pl-ent">version:</span> 1</span>
+<span class="pl-s"><span class="pl-ent">runtime:</span> <span class="pl-s">go</span></span>
+<span class="pl-s"><span class="pl-ent">api_version:</span> <span class="pl-s">go1</span></span>
+
+<span class="pl-s"><span class="pl-ent">handlers:</span></span>
+
+<span class="pl-s">- <span class="pl-ent">url:</span> <span class="pl-s">/.*</span></span>
+  <span class="pl-s"><span class="pl-ent">script:</span> <span class="pl-s">_go_app</span></span></pre></div>
+
+<p>The app.go file:</p>
+
+<div class="highlight highlight-source-go"><pre><span class="pl-k">package</span> app
+
+<span class="pl-k">import</span> (
+    <span class="pl-s"><span class="pl-pds">"</span>appengine<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear/middleware<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>net/http<span class="pl-pds">"</span></span>
+)
+
+<span class="pl-k">func</span> <span class="pl-en">init</span>() {
+    <span class="pl-smi">router</span> <span class="pl-k">:=</span> violetear.<span class="pl-c1">New</span>()
+    <span class="pl-smi">stdChain</span> <span class="pl-k">:=</span> middleware.<span class="pl-c1">New</span>(requestID)
+    router.<span class="pl-c1">Handle</span>(<span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>, stdChain.<span class="pl-c1">ThenFunc</span>(index), <span class="pl-s"><span class="pl-pds">"</span>GET, HEAD<span class="pl-pds">"</span></span>)
+    http.<span class="pl-c1">Handle</span>(<span class="pl-s"><span class="pl-pds">"</span>/<span class="pl-pds">"</span></span>, router)
+}
+
+<span class="pl-k">func</span> <span class="pl-en">requestID</span>(<span class="pl-v">next</span> <span class="pl-v">http</span>.<span class="pl-v">Handler</span>) <span class="pl-v">http</span>.<span class="pl-v">Handler</span> {
+    <span class="pl-k">return</span> http.<span class="pl-c1">HandlerFunc</span>(<span class="pl-k">func</span>(w http.<span class="pl-smi">ResponseWriter</span>, r *http.<span class="pl-smi">Request</span>) {
+        <span class="pl-smi">c</span> <span class="pl-k">:=</span> appengine.<span class="pl-c1">NewContext</span>(r)
+        w.<span class="pl-c1">Header</span>().<span class="pl-c1">Set</span>(<span class="pl-s"><span class="pl-pds">"</span>Request-ID<span class="pl-pds">"</span></span>, appengine.<span class="pl-c1">RequestID</span>(c))
+        next.<span class="pl-c1">ServeHTTP</span>(w, r)
+    })
+}
+
+<span class="pl-k">func</span> <span class="pl-en">index</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    w.<span class="pl-c1">Write</span>([]<span class="pl-k">byte</span>(<span class="pl-s"><span class="pl-pds">"</span>Hello world!<span class="pl-pds">"</span></span>))
+}</pre></div>
+
+<p>Demo: <a href="http://api.violetear.org">http://api.violetear.org</a></p>
+
+<p>Using <code>curl</code> or <code>http</code>:</p>
+
+<div class="highlight highlight-source-shell"><pre>$ http http://api.violetear.org
+HTTP/1.1 200 OK
+Cache-Control: private
+Content-Encoding: gzip
+Content-Length: 32
+Content-Type: text/html<span class="pl-k">;</span> charset=utf-8
+Date: Sun, 25 Oct 2015 06:14:55 GMT
+Request-Id: 562c735f00ff0902f823e514a90001657e76696f6c65746561722d31313037000131000100
+Server: Google Frontend
+
+Hello world<span class="pl-k">!</span></pre></div>
 
 <p>More references:</p>
 
