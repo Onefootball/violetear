@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
+      <h1 class="project-name">Violetear</h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -48,7 +48,7 @@
 <h2>
 <a id="how-it-works" class="anchor" href="#how-it-works" aria-hidden="true"><span class="octicon octicon-link"></span></a>How it works</h2>
 
-<p>The router is capable off handle any kind or URI static,
+<p>The router is capable off handle any kind or URI, static,
 dynamic or catchall and based on the
 <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">HTTP request Method</a>
 accept or discard the request.</p>
@@ -436,6 +436,70 @@ Request-Id: 562c735f00ff0902f823e514a90001657e76696f6c65746561722d31313037000131
 Server: Google Frontend
 
 Hello world<span class="pl-k">!</span></pre></div>
+
+<h1>
+<a id="context--named-parameters" class="anchor" href="#context--named-parameters" aria-hidden="true"><span class="octicon octicon-link"></span></a>Context &amp; Named parameters</h1>
+
+<p>In some cases there is a need to pass data across
+handlers/middlewares, for doing this <strong>Violetear</strong> uses
+<a href="https://godoc.org/golang.org/x/net/context">net/context</a>.</p>
+
+<p>Example:</p>
+
+<div class="highlight highlight-source-go"><pre><span class="pl-k">package</span> main
+
+<span class="pl-k">import</span> (
+    <span class="pl-s"><span class="pl-pds">"</span>fmt<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>log<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>net/http<span class="pl-pds">"</span></span>
+)
+
+<span class="pl-k">func</span> <span class="pl-en">catchAll</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    <span class="pl-smi">cw</span> <span class="pl-k">:=</span> w.(*ResponseWriter)
+    fmt.<span class="pl-c1">Fprintf</span>(w, <span class="pl-s"><span class="pl-pds">"</span>CatchAll value:, <span class="pl-c1">%q</span><span class="pl-pds">"</span></span>, cw.<span class="pl-smi">ctx</span>.<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>))
+}
+
+<span class="pl-k">func</span> <span class="pl-en">handleUUID</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    <span class="pl-smi">cw</span> <span class="pl-k">:=</span> w.(*ResponseWriter)
+    <span class="pl-c">// add a key-value pair to the context</span>
+    cw.<span class="pl-smi">ctx</span> = context.<span class="pl-c1">WithValue</span>(cw.<span class="pl-smi">ctx</span>, <span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>my-value<span class="pl-pds">"</span></span>)
+    <span class="pl-c">// print current value for :uuid</span>
+    fmt.<span class="pl-c1">Fprintf</span>(w, <span class="pl-s"><span class="pl-pds">"</span>Named parameter:, <span class="pl-c1">%q</span><span class="pl-pds">"</span></span>, cw.<span class="pl-smi">ctx</span>.<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>))
+}
+
+<span class="pl-k">func</span> <span class="pl-en">main</span>() {
+    <span class="pl-smi">router</span> <span class="pl-k">:=</span> violetear.<span class="pl-c1">New</span>()
+
+    router.<span class="pl-c1">AddRegex</span>(<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">`</span>[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}<span class="pl-pds">`</span></span>)
+
+    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>, catchAll)
+    router.<span class="pl-c1">HandleFunc</span>(<span class="pl-s"><span class="pl-pds">"</span>/:uuid<span class="pl-pds">"</span></span>, handleUUID, <span class="pl-s"><span class="pl-pds">"</span>GET,HEAD<span class="pl-pds">"</span></span>)
+
+    log.<span class="pl-c1">Fatal</span>(http.<span class="pl-c1">ListenAndServe</span>(<span class="pl-s"><span class="pl-pds">"</span>:8080<span class="pl-pds">"</span></span>, router))
+}</pre></div>
+
+<p>Notice that for been available to use the Context <code>ctx</code> you need to do a type assertion:</p>
+
+<pre><code>cw := w.(*ResponseWriter)
+</code></pre>
+
+<p>To set a key-value pair you need to:</p>
+
+<pre><code>cw.ctx = context.WithValue(cw.ctx, "key", "my-value")
+</code></pre>
+
+<p>To retrieve a value:</p>
+
+<pre><code>cw.ctx = context.Value("key").(string)
+</code></pre>
+
+<p>In cases where the same named parameter is used multiple times, example:</p>
+
+<pre><code>/test/:uuid/:uuid/
+</code></pre>
+
+<p>The last match value will be assigned.</p>
 
 <p>More references:</p>
 
