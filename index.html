@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">Violetear</h1>
+      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -527,7 +527,7 @@ handlers/middlewares, for doing this <strong>Violetear</strong> uses
 <p>Notice the <code>:</code> prefix when getting the named_parameters, this is because the same context <code>ctx</code> is used among all the requests, therefore if you want to create a <code>key-value</code> pair with something like <code>uuid</code> it dosn't overwrite the <code>:uuid</code> named parameter:</p>
 
 <pre><code>cw.Get(":uuid") get the named parameter set by the router.
-cw.GET("uuid") get a custom key 
+cw.GET("uuid") get a custom key
 </code></pre>
 
 <p>More references:</p>
