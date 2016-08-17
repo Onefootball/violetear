@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Violetear</title>
+    <title>Violetear by nbari</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -12,7 +12,6 @@
   <body>
     <section class="page-header">
       <h1 class="project-name">Violetear</h1>
-      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -22,7 +21,7 @@
     <section class="main-content">
       <p><a href="https://godoc.org/github.com/nbari/violetear"><img src="https://godoc.org/github.com/nbari/violetear?status.svg" alt="GoDoc"></a>
 <a href="https://travis-ci.org/nbari/violetear"><img src="https://travis-ci.org/nbari/violetear.svg?branch=master" alt="Build Status"></a>
-<a href="http://gocover.io/github.com/nbari/violetear"><img src="http://gocover.io/_badge/github.com/nbari/violetear?0" alt="Coverage"></a>
+<a href="https://gocover.io/github.com/nbari/violetear"><img src="https://gocover.io/_badge/github.com/nbari/violetear?0" alt="Coverage"></a>
 <a href="https://coveralls.io/github/nbari/violetear?branch=develop"><img src="https://coveralls.io/repos/nbari/violetear/badge.svg?branch=develop&amp;service=github" alt="Coverage Status"></a></p>
 
 <h1>
@@ -34,7 +33,7 @@
 <a id="design-goals" class="anchor" href="#design-goals" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Design Goals</h3>
 
 <ul>
-<li>Keep it simple and small, avoiding extra complexity at all cost. <a href="http://en.wikipedia.org/wiki/KISS_principle">KISS</a>
+<li>Keep it simple and small, avoiding extra complexity at all cost. <a href="https://en.wikipedia.org/wiki/KISS_principle">KISS</a>
 </li>
 <li>Support for static and dynamic routing.</li>
 <li>Easy middleware compatibility so that it satisfies the http.Handler interface.</li>
@@ -69,7 +68,7 @@ any IP address.</p>
 <pre><code>router.HandleFunc("/command/ping/:ip", ip_handler, "GET")
 </code></pre>
 
-<p>For this to work, first the a regex matching <code>:ip</code> should be added:</p>
+<p>For this to work, first the regex matching <code>:ip</code> should be added:</p>
 
 <pre><code>router.AddRegex(":ip", `^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$`)
 </code></pre>
@@ -88,7 +87,7 @@ any IP address.</p>
 <pre><code>router.HandleFunc("/command/ping/*", any_handler, "GET, HEAD")
 </code></pre>
 
-<p>The * indicates the router to behave like a catch-all therefore it
+<p>The <code>*</code> indicates the router to behave like a catch-all therefore it
 will match anything after the <code>/command/ping/</code> if no other condition matches
 before.</p>
 
@@ -98,6 +97,18 @@ can also be customised.</p>
 
 <h2>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<p><a href="http://gopkg.in/nbari/violetear.v2">http://gopkg.in/nbari/violetear.v2</a></p>
+
+<p>If using <code>go &gt;= 1.7</code> (using context form the standard library):</p>
+
+<pre><code>import "gopkg.in/nbari/violetear.v2"
+</code></pre>
+
+<p>If using <code>go &lt; 1.7</code>:</p>
+
+<pre><code>import "gopkg.in/nbari/violetear.v1"
+</code></pre>
 
 <p><strong>HandleFunc</strong>:</p>
 
@@ -292,10 +303,12 @@ func main() {
 <div class="highlight highlight-source-go"><pre><span class="pl-k">package</span> main
 
 <span class="pl-k">import</span> (
-    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear<span class="pl-pds">"</span></span>
-    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear/middleware<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>context<span class="pl-pds">"</span></span>
     <span class="pl-s"><span class="pl-pds">"</span>log<span class="pl-pds">"</span></span>
     <span class="pl-s"><span class="pl-pds">"</span>net/http<span class="pl-pds">"</span></span>
+
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear<span class="pl-pds">"</span></span>
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear/middleware<span class="pl-pds">"</span></span>
 )
 
 <span class="pl-k">func</span> <span class="pl-en">commonHeaders</span>(<span class="pl-v">next</span> <span class="pl-v">http</span>.<span class="pl-v">Handler</span>) <span class="pl-v">http</span>.<span class="pl-v">Handler</span> {
@@ -308,7 +321,9 @@ func main() {
 <span class="pl-k">func</span> <span class="pl-en">middlewareOne</span>(<span class="pl-v">next</span> <span class="pl-v">http</span>.<span class="pl-v">Handler</span>) <span class="pl-v">http</span>.<span class="pl-v">Handler</span> {
     <span class="pl-k">return</span> http.<span class="pl-c1">HandlerFunc</span>(<span class="pl-k">func</span>(w http.<span class="pl-smi">ResponseWriter</span>, r *http.<span class="pl-smi">Request</span>) {
         log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing middlewareOne<span class="pl-pds">"</span></span>)
-        next.<span class="pl-c1">ServeHTTP</span>(w, r)
+        <span class="pl-smi">ctx</span> <span class="pl-k">:=</span> context.<span class="pl-c1">WithValue</span>(r.<span class="pl-c1">Context</span>(), <span class="pl-s"><span class="pl-pds">"</span>m1<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>m1<span class="pl-pds">"</span></span>)
+        ctx = context.<span class="pl-c1">WithValue</span>(ctx, <span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-c1">1</span>)
+        next.<span class="pl-c1">ServeHTTP</span>(w, r.<span class="pl-c1">WithContext</span>(ctx))
         log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing middlewareOne again<span class="pl-pds">"</span></span>)
     })
 }
@@ -319,19 +334,23 @@ func main() {
         <span class="pl-k">if</span> r.<span class="pl-smi">URL</span>.<span class="pl-smi">Path</span> != <span class="pl-s"><span class="pl-pds">"</span>/<span class="pl-pds">"</span></span> {
             <span class="pl-k">return</span>
         }
-        next.<span class="pl-c1">ServeHTTP</span>(w, r)
+        <span class="pl-smi">ctx</span> <span class="pl-k">:=</span> context.<span class="pl-c1">WithValue</span>(r.<span class="pl-c1">Context</span>(), <span class="pl-s"><span class="pl-pds">"</span>m2<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>m2<span class="pl-pds">"</span></span>)
+        next.<span class="pl-c1">ServeHTTP</span>(w, r.<span class="pl-c1">WithContext</span>(ctx))
         log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing middlewareTwo again<span class="pl-pds">"</span></span>)
     })
 }
 
 <span class="pl-k">func</span> <span class="pl-en">catchAll</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
-    log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing finalHandler<span class="pl-pds">"</span></span>)
+    log.<span class="pl-c1">Printf</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing finalHandler<span class="pl-cce">\n</span>m1:<span class="pl-c1">%s</span><span class="pl-cce">\n</span>key:<span class="pl-c1">%d</span><span class="pl-cce">\n</span>m2:<span class="pl-c1">%s</span><span class="pl-cce">\n</span><span class="pl-pds">"</span></span>,
+        r.<span class="pl-c1">Context</span>().<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>m1<span class="pl-pds">"</span></span>),
+        r.<span class="pl-c1">Context</span>().<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>),
+        r.<span class="pl-c1">Context</span>().<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>m2<span class="pl-pds">"</span></span>),
+    )
     w.<span class="pl-c1">Write</span>([]<span class="pl-k">byte</span>(<span class="pl-s"><span class="pl-pds">"</span>I catch all<span class="pl-pds">"</span></span>))
 }
 
 <span class="pl-k">func</span> <span class="pl-en">foo</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
-    log.<span class="pl-c1">Println</span>(<span class="pl-s"><span class="pl-pds">"</span>Executing finalHandler<span class="pl-pds">"</span></span>)
-    w.<span class="pl-c1">Write</span>([]<span class="pl-k">byte</span>(<span class="pl-s"><span class="pl-pds">"</span>foo<span class="pl-pds">"</span></span>))
+    <span class="pl-c1">panic</span>(<span class="pl-s"><span class="pl-pds">"</span>this will never happen, because of the return<span class="pl-pds">"</span></span>)
 }
 
 <span class="pl-k">func</span> <span class="pl-en">main</span>() {
@@ -366,14 +385,17 @@ I catch all</pre></div>
 <p>On the server you will see something like this:</p>
 
 <div class="highlight highlight-source-shell"><pre>$ go run <span class="pl-c1">test</span>.go
-2015/10/22 18:07:55 Adding path: / [GET]
-2015/10/22 18:07:55 Adding path: /foo [GET]
-2015/10/22 18:07:55 Adding path: /bar [ALL]
-2015/10/22 18:08:18 Executing middlewareOne
-2015/10/22 18:08:18 Executing middlewareTwo
-2015/10/22 18:08:18 Executing finalHandler
-2015/10/22 18:08:18 Executing middlewareTwo again
-2015/10/22 18:08:18 Executing middlewareOne again</pre></div>
+2016/08/17 18:08:42 Adding path: / [GET,HEAD]
+2016/08/17 18:08:42 Adding path: /foo [GET,HEAD]
+2016/08/17 18:08:42 Adding path: /bar [ALL]
+2016/08/17 18:08:47 Executing middlewareOne
+2016/08/17 18:08:47 Executing middlewareTwo
+2016/08/17 18:08:47 Executing finalHandler
+m1:m1
+key:1
+m2:m2
+2016/08/17 18:08:47 Executing middlewareTwo again
+2016/08/17 18:08:47 Executing middlewareOne again</pre></div>
 
 <h2>
 <a id="appengine" class="anchor" href="#appengine" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>AppEngine</h2>
@@ -448,24 +470,27 @@ handlers/middlewares, for doing this <strong>Violetear</strong> uses
 <div class="highlight highlight-source-go"><pre><span class="pl-k">package</span> main
 
 <span class="pl-k">import</span> (
+    <span class="pl-s"><span class="pl-pds">"</span>context<span class="pl-pds">"</span></span>
     <span class="pl-s"><span class="pl-pds">"</span>fmt<span class="pl-pds">"</span></span>
-    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear<span class="pl-pds">"</span></span>
     <span class="pl-s"><span class="pl-pds">"</span>log<span class="pl-pds">"</span></span>
     <span class="pl-s"><span class="pl-pds">"</span>net/http<span class="pl-pds">"</span></span>
+
+    <span class="pl-s"><span class="pl-pds">"</span>github.com/nbari/violetear<span class="pl-pds">"</span></span>
 )
 
 <span class="pl-k">func</span> <span class="pl-en">catchAll</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
-    <span class="pl-smi">cw</span> <span class="pl-k">:=</span> w.(*violetear.<span class="pl-smi">ResponseWriter</span>)
     <span class="pl-c">// Get &amp; print the content of named-param *</span>
-    fmt.<span class="pl-c1">Fprintf</span>(w, <span class="pl-s"><span class="pl-pds">"</span>CatchAll value:, <span class="pl-c1">%q</span><span class="pl-pds">"</span></span>, cw.<span class="pl-c1">Get</span>(<span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>))
+    fmt.<span class="pl-c1">Fprintf</span>(w, <span class="pl-s"><span class="pl-pds">"</span>CatchAll value:, <span class="pl-c1">%q</span><span class="pl-pds">"</span></span>, r.<span class="pl-c1">Context</span>().<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>))
 }
 
 <span class="pl-k">func</span> <span class="pl-en">handleUUID</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
-    <span class="pl-smi">cw</span> <span class="pl-k">:=</span> w.(*violetear.<span class="pl-smi">ResponseWriter</span>)
     <span class="pl-c">// add a key-value pair to the context</span>
-    cw.<span class="pl-c1">Set</span>(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>my-value<span class="pl-pds">"</span></span>)
+    <span class="pl-smi">ctx</span> <span class="pl-k">:=</span> context.<span class="pl-c1">WithValue</span>(r.<span class="pl-c1">Context</span>(), <span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>my-value<span class="pl-pds">"</span></span>)
     <span class="pl-c">// print current value for :uuid</span>
-    fmt.<span class="pl-c1">Fprintf</span>(w, <span class="pl-s"><span class="pl-pds">"</span>Named parameter:, <span class="pl-c1">%q</span><span class="pl-pds">"</span></span>, cw.<span class="pl-c1">Get</span>(<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>))
+    fmt.<span class="pl-c1">Fprintf</span>(w, <span class="pl-s"><span class="pl-pds">"</span>Named parameter: <span class="pl-c1">%q</span>, key: <span class="pl-c1">%s</span><span class="pl-pds">"</span></span>,
+        ctx.<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>),
+        ctx.<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>),
+    )
 }
 
 <span class="pl-k">func</span> <span class="pl-en">main</span>() {
@@ -479,7 +504,37 @@ handlers/middlewares, for doing this <strong>Violetear</strong> uses
     log.<span class="pl-c1">Fatal</span>(http.<span class="pl-c1">ListenAndServe</span>(<span class="pl-s"><span class="pl-pds">"</span>:8080<span class="pl-pds">"</span></span>, router))
 }</pre></div>
 
-<p>Notice that for been available to use the <strong>Context</strong> <code>ctx</code> you need to do a type assertion:</p>
+<h2>
+<a id="duplicated-named-parameters" class="anchor" href="#duplicated-named-parameters" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Duplicated named parameters</h2>
+
+<p>In cases where the same named parameter is used multiple times, example:</p>
+
+<pre><code>/test/:uuid/:uuid/
+</code></pre>
+
+<p>An slice is created, for getting the values you need to do something like:</p>
+
+<pre><code>    params := r.Context().Value(":uuid").([]string)
+</code></pre>
+
+<p>After this you can access the slice like normal:</p>
+
+<pre><code>    fmt.Println(params[0], params[1])
+</code></pre>
+
+<p>Notice the <code>:</code> prefix when getting the named_parameters, this is because the
+same context <code>ctx</code> is used among all the requests, therefore if you want to
+create a <code>key-value</code> pair with something like <code>uuid</code> it doesn't overwrite the
+<code>:uuid</code> named parameter:</p>
+
+<pre><code>r.Context().Value(":uuid") get the named parameter set by the router.
+r.Context().Value("uuid") get a custom key named ``uuid``
+</code></pre>
+
+<h2>
+<a id="only-for-go--17" class="anchor" href="#only-for-go--17" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Only for go &lt; 1.7</h2>
+
+<p>For been available to use the <strong>Context</strong> <code>ctx</code> you need to do a type assertion:</p>
 
 <pre><code>cw := w.(*violetear.ResponseWriter)
 </code></pre>
@@ -508,35 +563,13 @@ handlers/middlewares, for doing this <strong>Violetear</strong> uses
 <p>You may need <a href="https://golang.org/ref/spec#Type_assertions">Type assertions</a>: <code>cw.Get(value).(string)</code> depending on your needs.</p>
 </blockquote>
 
-<p>In cases where the same named parameter is used multiple times, example:</p>
-
-<pre><code>/test/:uuid/:uuid/
-</code></pre>
-
-<p>An slice is created, for getting the values you need to do something like:</p>
-
-<pre><code>    params := cw.Get(":uuid").([]interface{})
-</code></pre>
-
-<p>After this you can access the slice like normal:</p>
-
-<pre><code>    fmt.Println(params[0],  params[1])
-</code></pre>
-
-<p>Notice the <code>:</code> prefix when getting the named_parameters, this is because the same context <code>ctx</code> is used among all the requests, therefore if you want to create a <code>key-value</code> pair with something like <code>uuid</code> it dosn't overwrite the <code>:uuid</code> named parameter:</p>
-
-<pre><code>cw.Get(":uuid") get the named parameter set by the router.
-cw.GET("uuid") get a custom key
-</code></pre>
-
 <p>More references:</p>
 
 <ul>
-<li><a href="http://www.alexedwards.net/blog/making-and-using-middleware">http://www.alexedwards.net/blog/making-and-using-middleware</a></li>
+<li><a href="https://tip.golang.org/doc/go1.7#context">https://tip.golang.org/doc/go1.7#context</a></li>
 <li><a href="https://justinas.org/alice-painless-middleware-chaining-for-go/">https://justinas.org/alice-painless-middleware-chaining-for-go/</a></li>
-<li>
-<a href="https://golang.org/ref/spec#Type_assertions">https://golang.org/ref/spec#Type_assertions</a> (for the context)</li>
-<li><a href="https://godoc.org/golang.org/x/net/context">https://godoc.org/golang.org/x/net/context</a></li>
+<li><a href="http://www.alexedwards.net/blog/making-and-using-middleware">http://www.alexedwards.net/blog/making-and-using-middleware</a></li>
+<li><a href="https://golang.org/ref/spec#Type_assertions">https://golang.org/ref/spec#Type_assertions</a></li>
 </ul>
 
 <h2>
