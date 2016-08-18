@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Violetear</title>
+    <title>Violetear by nbari</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
+      <h1 class="project-name">Violetear</h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -480,15 +480,18 @@ handlers/middlewares, for doing this <strong>Violetear</strong> uses
 
 <span class="pl-k">func</span> <span class="pl-en">catchAll</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
     <span class="pl-c">// Get &amp; print the content of named-param *</span>
-    fmt.<span class="pl-c1">Fprintf</span>(w, <span class="pl-s"><span class="pl-pds">"</span>CatchAll value:, <span class="pl-c1">%q</span><span class="pl-pds">"</span></span>, r.<span class="pl-c1">Context</span>().<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>))
+    <span class="pl-smi">params</span> <span class="pl-k">:=</span> r.<span class="pl-c1">Context</span>().<span class="pl-c1">Value</span>(violetear.<span class="pl-smi">ParamsKey</span>).(violetear.<span class="pl-smi">Params</span>)
+    fmt.<span class="pl-c1">Fprintf</span>(w, <span class="pl-s"><span class="pl-pds">"</span>CatchAll value:, <span class="pl-c1">%q</span><span class="pl-pds">"</span></span>, params[<span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>])
 }
 
 <span class="pl-k">func</span> <span class="pl-en">handleUUID</span>(<span class="pl-v">w</span> <span class="pl-v">http</span>.<span class="pl-v">ResponseWriter</span>, <span class="pl-v">r</span> *<span class="pl-v">http</span>.<span class="pl-v">Request</span>) {
+    <span class="pl-c">// get router params</span>
+    <span class="pl-smi">params</span> <span class="pl-k">:=</span> r.<span class="pl-c1">Context</span>().<span class="pl-c1">Value</span>(violetear.<span class="pl-smi">ParamsKey</span>).(violetear.<span class="pl-smi">Params</span>)
     <span class="pl-c">// add a key-value pair to the context</span>
     <span class="pl-smi">ctx</span> <span class="pl-k">:=</span> context.<span class="pl-c1">WithValue</span>(r.<span class="pl-c1">Context</span>(), <span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>, <span class="pl-s"><span class="pl-pds">"</span>my-value<span class="pl-pds">"</span></span>)
     <span class="pl-c">// print current value for :uuid</span>
     fmt.<span class="pl-c1">Fprintf</span>(w, <span class="pl-s"><span class="pl-pds">"</span>Named parameter: <span class="pl-c1">%q</span>, key: <span class="pl-c1">%s</span><span class="pl-pds">"</span></span>,
-        ctx.<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>),
+        params[<span class="pl-s"><span class="pl-pds">"</span>:uuid<span class="pl-pds">"</span></span>],
         ctx.<span class="pl-c1">Value</span>(<span class="pl-s"><span class="pl-pds">"</span>key<span class="pl-pds">"</span></span>),
     )
 }
@@ -514,21 +517,17 @@ handlers/middlewares, for doing this <strong>Violetear</strong> uses
 
 <p>An slice is created, for getting the values you need to do something like:</p>
 
-<pre><code>    params := r.Context().Value(":uuid").([]string)
+<pre><code>    params := r.Context().Value(violetear.ParamsKey).(violetear.Params)
+    uuid := params[":uuid"].([]string)
 </code></pre>
+
+<blockquote>
+<p>Notice the <code>:</code> prefix when getting the named_parameters</p>
+</blockquote>
 
 <p>After this you can access the slice like normal:</p>
 
-<pre><code>    fmt.Println(params[0], params[1])
-</code></pre>
-
-<p>Notice the <code>:</code> prefix when getting the named_parameters, this is because the
-same context <code>ctx</code> is used among all the requests, therefore if you want to
-create a <code>key-value</code> pair with something like <code>uuid</code> it doesn't overwrite the
-<code>:uuid</code> named parameter:</p>
-
-<pre><code>r.Context().Value(":uuid") get the named parameter set by the router.
-r.Context().Value("uuid") get a custom key named ``uuid``
+<pre><code>    fmt.Println(uuid[0], uuid[1])
 </code></pre>
 
 <h2>
