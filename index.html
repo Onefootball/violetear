@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>Violetear</title>
+    <title>Violetear by nbari</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,7 +11,7 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name"><img src="https://raw.githubusercontent.com/nbari/violetear/gh-pages/violetear.png" alt="violetear"></h1>
+      <h1 class="project-name">Violetear</h1>
       <h2 class="project-tagline">Go HTTP router</h2>
       <a href="https://github.com/nbari/violetear" class="btn">View on GitHub</a>
       <a href="https://github.com/nbari/violetear/zipball/master" class="btn">Download .zip</a>
@@ -21,8 +21,8 @@
     <section class="main-content">
       <p><a href="https://godoc.org/github.com/nbari/violetear"><img src="https://godoc.org/github.com/nbari/violetear?status.svg" alt="GoDoc"></a>
 <a href="https://travis-ci.org/nbari/violetear"><img src="https://travis-ci.org/nbari/violetear.svg?branch=master" alt="Build Status"></a>
-<a href="https://gocover.io/github.com/nbari/violetear"><img src="https://gocover.io/_badge/github.com/nbari/violetear?0" alt="Coverage"></a>
-<a href="https://coveralls.io/github/nbari/violetear?branch=develop"><img src="https://coveralls.io/repos/nbari/violetear/badge.svg?branch=develop&amp;service=github" alt="Coverage Status"></a></p>
+<a href="https://coveralls.io/github/nbari/violetear?branch=develop"><img src="https://coveralls.io/repos/nbari/violetear/badge.svg?branch=develop&amp;service=github" alt="Coverage Status"></a>
+<a href="https://goreportcard.com/report/github.com/nbari/violetear"><img src="https://goreportcard.com/badge/github.com/nbari/violetear" alt="Go Report Card"></a></p>
 
 <h1>
 <a id="violetear" class="anchor" href="#violetear" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>violetear</h1>
@@ -402,15 +402,15 @@ m2:m2
 
 <p>The app.yaml file:</p>
 
-<div class="highlight highlight-source-yaml"><pre><span class="pl-s"><span class="pl-ent">application:</span> <span class="pl-s"><span class="pl-pds">'</span>app-name<span class="pl-pds">'</span></span></span>
-<span class="pl-c1"><span class="pl-ent">version:</span> 1</span>
-<span class="pl-s"><span class="pl-ent">runtime:</span> <span class="pl-s">go</span></span>
-<span class="pl-s"><span class="pl-ent">api_version:</span> <span class="pl-s">go1</span></span>
+<div class="highlight highlight-source-yaml"><pre><span class="pl-ent">application:</span> <span class="pl-s"><span class="pl-pds">'</span>app-name<span class="pl-pds">'</span></span>
+<span class="pl-ent">version:</span> <span class="pl-c1">1</span>
+<span class="pl-ent">runtime:</span> <span class="pl-s">go</span>
+<span class="pl-ent">api_version:</span> <span class="pl-s">go1</span>
 
-<span class="pl-s"><span class="pl-ent">handlers:</span></span>
+<span class="pl-ent">handlers:</span>
 
-<span class="pl-s">- <span class="pl-ent">url:</span> <span class="pl-s">/.*</span></span>
-  <span class="pl-s"><span class="pl-ent">script:</span> <span class="pl-s">_go_app</span></span></pre></div>
+- <span class="pl-ent">url:</span> <span class="pl-s">/.*</span>
+  <span class="pl-ent">script:</span> <span class="pl-s">_go_app</span></pre></div>
 
 <p>The app.go file:</p>
 
